@@ -1,6 +1,6 @@
 locals {
   workspace  = terraform.workspace
-  prefix     = "rbt-${local.workspace}"
+  prefix     = "${local.workspace}"
   project_id = "ASCENDRA"
 }
 
