@@ -78,6 +78,38 @@ resource "local_file" "private_key" {
   filename = "./keys/${local.prefix}-bastion-key.pem"
 }
 
+resource "aws_security_group" "bastion_sg" {
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    description = "SSH from my IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["MEU_IP/32"]
+  }
+
+  ingress {
+    description = "Allow all ICMP"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name    = "${local.prefix}-bastion-sg"
+    Project = "${local.project_id}"
+  }
+}
+
 resource "aws_instance" "bastion" {
   ami             = "ami-05b10e08d247fb927"
   instance_type   = "t2.micro"
